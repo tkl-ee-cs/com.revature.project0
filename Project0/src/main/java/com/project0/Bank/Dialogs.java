@@ -6,47 +6,67 @@ public class Dialogs {
 	//Start First Prompts
 	//Create User
 	//Sign In
-	private Scanner inputObj;  // Create a Scanner object
+	private static Scanner scanner = new Scanner(System.in);  // Create a Scanner object
 
 	//Initial Service Selection Prompt
-	public static void initSelectPrompt() {
+	public static int initSelectPrompt() {
+		String retString = "";
 	    System.out.println("__MAKE A SELECTION <1/2>__");
 	    System.out.println("---Create New Account [1]:");
 	    System.out.println("---Log In To Your Account [2]:");
-	    //Wait for input
+	    //int retVal = scanner.nextInt(); //Wait for input
 	    //Perform Checks
-	    //Re-prompt if necessary
+	    int retInt = 0;
+	    
+	    while((retInt != 1) & (retInt != 2)) {
+	    	retInt = cleanScan.getInt();
+	    		
+			if(retInt == 1) {
+		    	return 1;
+		    }else if(retInt == 2) {
+		    	return 2;
+		    }
+	    	System.out.printf("...invalid choice, try again...");
+	    }
+	    return -1;
 	}
 	
 	//Create New Customer Prompt
-	public static void newUserPrompt(boolean flag) {
-		System.out.println("__PLEASE ENTER NEW CUSTOMER ACCOUNT DETAILS__");
-	    System.out.println("---UserName:");
-	    //Wait for input
-	    //Perform Checks
-	    //Re-prompt if necessary
-	    System.out.println("---Password:");
-	    //Wait for input
-	    //Perform Checks
-	    //Re-prompt if necessary
-		System.out.println("---Starting Balance:");
-	    //Wait for input
-	    //Perform Checks
-	    //Re-prompt if necessary
-	    
-	    System.out.println("Confirm New Account Request? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    //Wait for input
-	    //Perform Checks
-	    //Re-prompt if necessary
+	public static int newUserPrompt() {
+		String username;
+		String password;
+		int balance;
+
+		char retVal = ' ';
 		
-		//perform needed operations
-		//Send Request to database
-		//control to return to calling method
+	    while((retVal != 'y') & (retVal != '0')) { //Loop while the retVal is not y or 0
+			System.out.println("__PLEASE ENTER NEW CUSTOMER ACCOUNT DETAILS__");
+		    System.out.println("---UserName:");
+		    username = cleanScan.getStr(); //Wait for input
+		    System.out.println("---Password:");
+		    password =  cleanScan.getStr(); //Wait for input
+			System.out.println("---Starting Balance:");
+			balance =  cleanScan.getInt(); //Wait for input
+		    
+		    System.out.println("Input [y] to Confirm Details for New Account Request? Or, Press [0] to Go Back...");
+		    System.out.println("Input [Any Other Key] to Restart the Submission Process...");
+		    
+    		retVal = cleanScan.getChar();
+			if(retVal == 'y') { //check for y, to confirm
+				System.out.println("Request Sent. Returning to Opening Menu...");
+				//Send Request to database
+				return 1;
+		    }else if(retVal == '0'){ //check for 0, to return to previous menu
+				System.out.println("Returning Back to Opening Menu...");
+				return 0;
+		    }
+	    }
+	    return -1;
 	}
 
 	//Log-in Prompt - For logging into account
 	public static void retUserPrompt() {
+
 		System.out.println("__ENTER USER CREDENTIALS__");
 	    System.out.println("---UserName:");
 	    //Wait for input
@@ -58,7 +78,7 @@ public class Dialogs {
 	    //Re-prompt if necessary
 	    
 	    System.out.println("Confirm Log in Detail? <y/n>");
-	    System.out.println("Press [0] to go back...");
+	    System.out.println("Or, Press [0] to Go Back...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -81,7 +101,7 @@ public class Dialogs {
 	    System.out.println("---View Your Accounts [2]:");
 	    //System.out.println("---Accept Pending Transfer Funds [5]:");
 	    System.out.println("\n");
-	    System.out.println("Press [0] to log out...");
+	    System.out.println("Press [0] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -96,8 +116,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 	   
 	    System.out.println("Confirm sending application request? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -118,8 +138,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 		
 	    System.out.println("Confirm view? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -137,7 +157,7 @@ public class Dialogs {
 	    System.out.println("---Post Transfer Funds [3]:");
 	    //System.out.println("---Accept Pending Transfer Funds [4]:");
 	    System.out.println("\n");
-	    System.out.println("Press [0] to log out...");
+	    System.out.println("Press [0] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -153,8 +173,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 		
 	    System.out.println("Confirm deposit? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -175,8 +195,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 		
 	    System.out.println("Confirm withdraw? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -204,8 +224,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 		
 	    System.out.println("Confirm transer? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -230,8 +250,8 @@ public class Dialogs {
 	    //Re-prompt if necessary
 		
 	    System.out.println("Confirm transer? <y/n>");
-	    System.out.println("Press [0] to go back...");
-	    System.out.println("Press [1] to log out...");
+	    System.out.println("Or, Press [0] to Go Back...");
+	    System.out.println("Or, Press [1] to Log Out...");
 	    //Wait for input
 	    //Perform Checks
 	    //Re-prompt if necessary
@@ -259,9 +279,13 @@ public class Dialogs {
 	
 	//Simple simulate Clear Console Prompt - pushing text off screen using newlines
 	public static void clearPrompt() {
-		for(int i=0;i<4;i++) {
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-		}
+	}
+	
+	private char cleanScan(String sc,String scType) {
+		
+		
+		return '1';
 	}
 	
 }
