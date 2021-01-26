@@ -1,139 +1,11 @@
 package com.project0.Bank;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Dialogs {
-	//private static Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-
-	/*Initial Service Selection Prompt
-	 * Input: N/A
-	 * Output: ????
-	 * */
-	public static int initSelectPrompt() {
-	    int retInt = 0;
-	    System.out.println("WELCOME TO BANK OF TRENTON LOCATED IN REVATURE, NJ.");
-	    System.out.println("__TO BEGIN SERVICE, PLEASE MAKE A SELECTION__");
-	    System.out.println("---Create New Account [1]:");
-	    System.out.println("---Log In To Your Account [2]:");
-	    System.out.println("Any other selection will restart the input process...");
-	    do{
-	    	retInt = cleanScan.getInt();
-			if(retInt == 1) {
-		    	return 1;
-		    }else if(retInt == 2) {
-		    	return 2;
-		    }else {
-	    	System.out.printf("...invalid selection, try again...");
-		    }
-	    }while((retInt != 1) & (retInt != 2));
-	    return -1; //return -1 if dropping out of proper return or the loop
-	}
-	
-	/*Create New Customer Prompt
-	 * Input: N/A
-	 * Output: ????
-	 * */
-	public static int newUserPrompt() {
-		String username;
-		String password;
-		int balance;
-		char retVal = ' ';
-		
-	    do { //Loop while the retVal is not y or 0
-			System.out.println("__PLEASE ENTER NEW CUSTOMER ACCOUNT DETAILS__");
-		    System.out.println("---UserName:");
-		    username = cleanScan.getStr(); //Wait for input
-		    System.out.println("---Password:");
-		    password = cleanScan.getStr(); //Wait for input
-			System.out.println("---Starting Balance:");
-			do {balance = cleanScan.getInt(); //Wait for input
-				if(balance == 0) {System.out.printf("...invalid amount, try again...");}
-			}while(balance == 0);
-		    
-		    System.out.println("Input [y] to Confirm Details for New Account Request? Or, Press [0] to Go Back...");
-		    System.out.println("Any other selection will restart the input process...");
-    		retVal = cleanScan.getChar();
-			if(retVal == 'y') { //check for y, to confirm
-				System.out.println("Request Sent. Returning to Opening Menu...");
-				//Send Request to database
-//-->edit 		return 1;
-		    }else if(retVal == '0'){ //check for 0, to return to previous menu
-				System.out.println("Returning Back to Opening Menu...");
-//-->edit 		return 0;
-		    }
-	    }while((retVal != 'y') | (retVal != '0'));
-	    return -1; //return -1 if dropping out of proper return or the loop
-	}
-
-	/*Log-in Prompt - For logging into account
-	 * Input: N/A
-	 * Output: ????
-	 * */
-	public static int retUserPrompt() {
-		String username;
-		String password;
-		char retVal = ' ';
-		
-	    do{//Loop while the retVal is not y or 0
-	    	System.out.println("__ENTER USER CREDENTIALS__");
-		    System.out.println("---UserName:");
-		    username = cleanScan.getStr(); //Wait for input
-		    System.out.println("---Password:");
-		    password = cleanScan.getStr(); //Wait for input
-		    //Re-prompt if necessary
-		    
-		    System.out.println("Input [y] to Confirm Submission? Or, Press [0] to Go Back...");
-		    System.out.println("Any other selection will restart the input process...");
-			retVal = cleanScan.getChar();
-			if(retVal == 'y') { //check for y, to confirm
-				System.out.println("Request Sent. Returning to Opening Menu...");
-				//Send Request to database
-//-->edit 		return 1;
-		    }else if(retVal == '0'){ //check for 0, to return to previous menu
-				System.out.println("Returning Back to Opening Menu...");
-//-->edit 		return 0;
-		    }else {
-		    	System.out.printf("...invalid selection, try again...");
-			}
-	    }while((retVal != 'y') | (retVal != '0'));
-	    return -1; //return -1 if dropping out of proper return or the loop
-	}
-	
-	/*Customer Prompt - Set of choices for Customer
-	 * Input: Integer username, password (potentially)
-	 * Output: Integer, indicating choice of Customer - 1(new account), 2(view), 0(back)
-	 * */
-	public static int customerPrompt(int user, int password) { 
-		int retInt;
-		String name = "";
-		
-//-->edit query database for user name
-		System.out.println("WELCOME " + name + ". HOW MAY WE HELP YOU TODAY?");
-		
-	    do{
-		    System.out.println("__PLEASE MAKE A SELECTION__");
-		    System.out.println("---Apply For A New Banking Account [1]:");
-		    System.out.println("---View Your Accounts [2]:");
-		    System.out.println("\n");
-		    System.out.println("Press [0] to Log Out. Any other selection will restart the input process...");
-		    retInt = cleanScan.getInt();
-			if(retInt == 1) { // Apply For A New Banking Account
-				System.out.println("Navigating to Application Menu...");
-//-->edit		Send Request to database
-				return 1;
-			}else if(retInt == 2){ //View Customer Accounts
-				System.out.println("Navigating to Account Viewing Menu...");
-				return 2;
-			}else if(retInt == 0){ //check for 0, to return to previous menu
-				System.out.println("Logging out...");
-				return 0;
-			}else {
-		    	System.out.printf("...invalid selection, try again...");
-			}
-	    }while(retInt > 2);
-	   
-	    return -1; //return -1 if dropping out of proper return or the loop
-	}
 	
 	/*Account Application Prompt - Prompts for creating a new account application
 	 * Input: N/A
@@ -465,43 +337,6 @@ public class Dialogs {
 		return -1;
 	}
 	
-	/*Employee Prompt - Set of choices for Employee
-	 * Input: Array, username, password (potentially)
-	 * Output: Integer, indicating choice of employee 
-	 * */
-	public static int employeePrompt(int user, int password) {
-		int retInt;
-		String name = "";
-		
-//-->edit query database to get the username of account
-	    System.out.println("WELCOME BACK, " + name + ".");
-	    
-	    System.out.println("__MAKE A SELECTION FROM THE MENU__");
-	    System.out.println("---Approve/Reject A Customer Account [1]:");
-	    System.out.println("---Approve/Reject A Banking Account Application [2]:");
-	    System.out.println("---View A Customer's Accounts [3]:");
-	    System.out.println("---View Transaction Logs [4]:");
-	    System.out.println("\n");
-	    System.out.println("Press [0] to log out...");
-	    do{
-	    	retInt = cleanScan.getInt();
-			if(retInt == 1) {
-		    	return 1;
-		    }else if(retInt == 2) {
-		    	return 2;
-		    }else if(retInt == 3) {
-		    	return 3;
-		    }else if(retInt == 4) {
-		    	return 4;
-		    }else if(retInt == 0) {
-		    	return 0;
-		    }else {
-	    	System.out.printf("...invalid selection, try again...");
-		    }
-	    }while((retInt < 0) | (retInt > 4));
-	    
-	    return -1; //return -1 if dropping out of proper return or the loop
-	}
 	
 	/*Approve/Reject User Prompt - Prompt for employee to approve/reject user
 	 * Input: N/A

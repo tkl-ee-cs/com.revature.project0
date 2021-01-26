@@ -12,7 +12,6 @@ public class cleanScan {
 			try{
 				retString = scanner.nextLine();
 			}catch (Exception e) {
-				System.out.println("Not valid, try again.");
 				e.printStackTrace();
 			}
 			if(retString.length() < 1) {

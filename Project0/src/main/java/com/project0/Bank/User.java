@@ -1,4 +1,14 @@
 package com.project0.Bank;
 
-public interface User {
+//import java.util.ArrayList;
+
+public abstract class User {
+	public abstract void setupUser();
+	public abstract void storeAccounts();
+	public abstract BankAccount viewAccount();
+	public abstract void approveReject();
+	
+	public abstract String getStatus();
+	public abstract String getType();
+	public abstract String getUsername();
 }
