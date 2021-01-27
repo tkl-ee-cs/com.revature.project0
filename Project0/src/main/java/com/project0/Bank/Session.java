@@ -274,7 +274,7 @@ public class Session {
 		for(BankAccount a:accts) { //identify all active accounts
 			if(a.getStatus().equals("active")){
 				active.add(a);
-				pends.addAll(connectDB.get_accounts_w_pending_transfer(a.getAccount_id()));
+				pends.addAll(connectDB.confirm_account_w_pending_transfer(a.getAccount_id()));
 			}
 		}
 		System.out.println("---------------------------------------------------------");
@@ -513,11 +513,11 @@ public class Session {
 		System.out.println("---------------------------------------------------------");
 		System.out.println("Account#: " + actid); 
 		do {
-			accts = connectDB.get_accounts_w_pending_transfer(ba.getAccount_id());
+			accts = connectDB.confirm_account_w_pending_transfer(ba.getAccount_id());
 			//for(int i=0;i<accts.size();i++) { System.out.println("---Account# " + accts.get(i).getAccount_id());} //Display the list of accounts
 			
 			//Selection Prompts in conditionals only appears when pending action are required
-			if(accts.size() > 0) { System.out.println("NOTE: YOU HAVE PENDING TRANSFER REQUESTS TO ACTION__");}
+			if(accts.size() > 0) { System.out.println("NOTE: YOU HAVE PENDING TRANSFER REQUEST(S) TO ACTION__");}
 			System.out.println("__PLEASE INDICATE WHETHER__");
 			System.out.println("---You would like to post a Transfer request [2]");
 			if(accts.size() > 0) { System.out.println("---You would like to action the pending requests [3]");}
@@ -530,13 +530,15 @@ public class Session {
 				System.out.println("Navigating Transfer Post Menu...");
 				System.out.println("---------------------------------------------------------");
 				retVal = postTransferPrompt(ba);
-				return 1;
+				if(retVal == 2) {return 1;}
+				else if(retVal == 1) {return 1;}
+				else if(retVal == 0) {return 0;}
 			}else if(retInt == 3) { //Action pending accounts, calling internal method acceptTransferPrompt
 				if(accts.size() > 0) { 
+					retVal = acceptTransferPrompt(ba);
 					System.out.println("Navigating Pending Transfers Menu...");
 					System.out.println("---------------------------------------------------------");
-//					pending = acceptTransferPrompt(account, balance);
-					return 1;
+					return retVal;
 				}else {
 					System.out.printf("...invalid selection, try again...");
 					retInt = -1;
@@ -563,20 +565,35 @@ public class Session {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int postTransferPrompt(BankAccount ba) {
 		//String user;
-		int act;
-		int [] acts = {0,0,0};
+		int amount,balance;
+		int src = ba.getAccount_id();
+		int dst;
 		int valid = 0;
 		int retInt, retVal;
-		
+		BankAccount ba2 = null;
+
+		System.out.println("---------------------------------------------------------");
 		do{
 			System.out.println("__PLEASE PROVIDE INTENDED ACCOUNT TO POST TRANSFER REQUEST__");
 		    System.out.printf("--Account#");
 		    do {
-		    	retVal = cleanScan.getInt();
-	    	//Check database for account, if it exists, return account number, else return 0
-	    	if(retVal == 0) {System.out.println("...invalid user, try again...");}
-	    }while((retVal < 1)|(valid==0));
+		    	dst = cleanScan.getInt();
+		    	//Check database for account, if it exists, return account number, else return 0
+		    	if(dst < 1) {System.out.println("...invalid input, try again...");}
+		    	else {
+		    		ba2 = connectDB.get_account_existance(dst);
+			    	if (ba2 != null) {valid = 1;}
+			    	else{System.out.println("...invalid user, try again...");}
+		    	}
+		    }while((dst < 1)|(valid==0));
 		    
+			System.out.println("__PLEASE INDICATE HOW MUCH YOU WISH TO TRANSFER__");
+			do {amount = cleanScan.getInt(); //Wait for input
+				ba2 = connectDB.get_account_w_aid(src);
+				balance = ba2.getBalance();
+				if(amount <= 0) {System.out.printf("...invalid amount, try again...");}
+				if(amount > balance) {System.out.println("...amount requested larger than funds, try again...");}
+			}while((amount == 0)|(amount > balance));
 //			System.out.println("__PLEASE PROVIDE USERNAME AND SELECT ACCOUNT TO POST TRANSFER REQUEST__");
 //		    System.out.println("---UserName:");
 //		    do {
@@ -599,27 +616,104 @@ public class Session {
 		    System.out.println("Any other key will restart the input process...");
 		    retInt = cleanScan.getInt();
 			if(retInt == 2) { 			
-				System.out.println("A transfer as been posted. Returning to previous menu...");
-//-->edit			Access to database
-//-->edit			return 3;
-			}else if(retInt == 0){ 
-				System.out.println("Returning Back to Previous Menu...");
-//-->edit			return 3;
+				retVal = connectDB.post_transfer(src,dst,amount);
+				if(retVal > 0) {
+					System.out.println("A transfer as been posted. Returning to previous menu...");
+					System.out.println("---------------------------------------------------------");
+					return 2;
+				}else if(retVal==0){
+					System.out.println("Issue arose with transfer, returning Back to Previous Menu...");
+					System.out.println("---------------------------------------------------------");
+					return 1;
+				}else {
+					System.out.printf("Issue arose with transfer, try again...");
+					retInt = -1;
+				}
 			}else if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
 				System.out.println("Logging out...");
-//-->edit			return 0;
+				System.out.println("---------------------------------------------------------");
+				return 0;
 			}else {
 				System.out.printf("...invalid selection, try again...");
+				retInt = -1;
 			}
-		}while(retInt > 2);
+		}while((retInt < 0) | (retInt > 2));
 		
 		return -1;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
+	// ACCEPT TRANSFER REQUESTS 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static int acceptTransferPrompt(BankAccount ba) {
+		int retInt = -1;
+		int retVal = -1;
+		BankAccount ba2;
+		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();;
+		ArrayList<Transaction> tLogs = new ArrayList<Transaction>();
 
+		System.out.println("---------------------------------------------------------");
+		do {
+			//Get all accounts that have posted transfers to this account
+			tLogs = connectDB.get_transaction_pending(ba.getAccount_id());
+			
+			if(tLogs.size() > 0) {
+				System.out.println("__YOU HAVE PENDING REQUEST(S) TO ACTION__");
+				for(Transaction i:tLogs) {
+					System.out.println("Account# " + i.getSrc() 
+					+ " has posted a transfer of $" + i.getAmount() + ". Please advise if you will:");
+					System.out.println("---Accept the Transfer Request [0]");
+					System.out.println("---Reject the Transfer Request [1]");	
+					System.out.println("---Temporarily Dismiss the Request [2]");	
+					do {
+						retInt = cleanScan.getInt();
+						if(retInt == 0){ 
+							ba2 = connectDB.get_account_w_aid(i.getSrc());
+							if(ba2.getBalance()<i.getAmount()) {
+								System.out.println("Not enought funds to fulfill transfer...");
+							}else {
+								System.out.println("Accepting the Transfer...");
+								System.out.println("---------------------------------------------------------");
+								connectDB.accept_transfer(i.getTransaction_id());
+							}
+						}else if(retInt == 1){ 
+							System.out.println("Rejecting the Transfer...");
+							System.out.println("---------------------------------------------------------");
+							connectDB.reject_transfer(i.getTransaction_id());
+						}else if(retInt == 2){ 
+							System.out.println("Dismissing the Request Temporarily...");
+							System.out.println("---------------------------------------------------------");
+						}else {
+							System.out.printf("...invalid selection, try again...");
+							retInt = -1;
+						}
+					}while((retInt > 2)|(retInt < 0));
+				}
+			}else {System.out.println("__YOU HAVE HANDLED ALL PENDING REQUEST(S)__");}
+			
+		    System.out.println("Press [1] to Go Back to Previous Menu. Press [0] to Log Out...");
+		    System.out.println("Any other integer key will restart the input process...");
+			retVal = cleanScan.getInt();
+			if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
+				System.out.println("Logging out...");
+				System.out.println("---------------------------------------------------------");
+				return 0;
+			}else {
+				retVal = -1;
+			}
+			
+		}while((retVal > 1)|(retVal < 0));
+		return -1;
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
