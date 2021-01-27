@@ -6,11 +6,11 @@ public class BankAccount {
 	int balance;
 	String status;
 	
-	public BankAccount(int account_id, int balance) {
+	public BankAccount(int account_id, int balance, String status) {
 		super();
 		this.account_id = account_id;
 		this.balance = balance;
-		this.status = "pending";
+		this.status = status;
 	}
 
 	public int getAccount_id() {

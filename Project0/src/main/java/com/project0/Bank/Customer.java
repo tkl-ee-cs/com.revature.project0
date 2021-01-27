@@ -11,6 +11,7 @@ public class Customer extends User {
 		super();
 		usr = new UserAccount(id,username,status,"customer");
 		acntlist = new ArrayList<BankAccount>();
+		
 	}
 	
 	@Override
@@ -19,9 +20,8 @@ public class Customer extends User {
 	}
 
 	@Override
-	public BankAccount viewAccount() {
-		System.out.println("display selected bank account");
-		// TODO Auto-generated method stub
+	public ArrayList<BankAccount> viewAccount() {
+		
 		return null;
 	}
 
@@ -36,6 +36,8 @@ public class Customer extends User {
 		System.out.println("get list of customer's accounts into list");
 		// TODO Auto-generated method stub
 	}
+	
+	/////////////////////////
 	
 	public String getStatus() {
 		return usr.getStatus();

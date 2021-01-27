@@ -8,7 +8,7 @@ public class cleanScan {
 	
 	public static String getStr() {
 		String retString = "";
-		while(retString.length() < 1) {
+		while((retString.length() < 1) | (retString.contains(" "))) {
 			try{
 				retString = scanner.nextLine();
 			}catch (Exception e) {
