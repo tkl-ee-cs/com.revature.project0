@@ -6,6 +6,8 @@ public class Bank {
 	
 	public static void main(String[] args) {
 		
+		connectDB.log.info("Start of Program");
+		
 		User usr;
 		while(true) {
 			usr = Session.startPrompts();

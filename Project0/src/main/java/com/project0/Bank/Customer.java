@@ -14,30 +14,29 @@ public class Customer extends User {
 		
 	}
 	
-	@Override
-	public void setupUser() {
-		System.out.println("createUser -- Customer");
-	}
-
-	@Override
-	public ArrayList<BankAccount> viewAccount() {
-		
-		return null;
-	}
-
-	@Override
-	public void approveReject() {
-		System.out.println("approve/reject posted transfer");
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void storeAccounts() {
-		System.out.println("get list of customer's accounts into list");
-		// TODO Auto-generated method stub
-	}
-	
-	/////////////////////////
+//	@Override
+//	public void setupUser() {
+//		System.out.println("createUser -- Customer");
+//	}
+//
+//	@Override
+//	public ArrayList<BankAccount> viewAccount() {
+//		
+//		return null;
+//	}
+//
+//	@Override
+//	public void approveReject() {
+//		System.out.println("approve/reject posted transfer");
+//		// TODO Auto-generated method stub
+//	}
+//
+//	@Override
+//	public void storeAccounts() {
+//		System.out.println("get list of customer's accounts into list");
+//		// TODO Auto-generated method stub
+//	}
+//	
 	
 	public String getStatus() {
 		return usr.getStatus();

@@ -8,14 +8,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 //import java.sql.Timestamp;
 import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class connectDB {
 	
+	public static Logger log = LogManager.getLogger(connectDB.class);
 	//static Connection connection;
 	
 	public static Connection dbconnect() throws SQLException {
 		//Connection connection;
-			//System.out.println("Connecting to PostgreSQL database...");
+			log.info("Connecting to PostgreSQL database...");
 			return DriverManager.getConnection(
 					"jdbc:postgresql://localhost/bank",
 					"postgres",
@@ -27,7 +30,7 @@ public class connectDB {
 		String status = null;
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB get_status_w_name()");
+		log.info("Called connectDB get_status_w_name()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL get_status_w_name(?,?)");
 			cstmt.setString(1,username);
@@ -35,7 +38,7 @@ public class connectDB {
 			cstmt.setString(2, null);
 			cstmt.execute();
 			status = cstmt.getString(2);
-			//System.out.println("Status of account is : "+ status);
+			log.info("Status of account is : "+ status);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -50,7 +53,7 @@ public class connectDB {
 		String act_type = null;
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB get_type_w_name()");
+		log.info("Called connectDB get_type_w_name()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL get_type_w_name(?,?)");
 			cstmt.setString(1,username);
@@ -58,7 +61,7 @@ public class connectDB {
 			cstmt.setString(2, null);
 			cstmt.execute();
 			act_type = cstmt.getString(2);
-			//System.out.println("Type of account is : "+ act_type);
+			log.info("Type of account is : "+ act_type);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -71,7 +74,7 @@ public class connectDB {
 		int uid = 0;
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB get_id_w_name_pw()");
+		log.info("Called connectDB get_id_w_name_pw()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL get_id_w_name_pw(?,?,?)");
 			cstmt.setString(1,username);
@@ -80,7 +83,7 @@ public class connectDB {
 			cstmt.setInt(3, 0);
 			cstmt.execute();
 			uid = cstmt.getInt(3);
-			//System.out.println("Type of account is : "+ act_type);
+			log.info("ID is : "+ uid);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -97,7 +100,7 @@ public class connectDB {
 		int uid = -1;
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB set_new_user()");
+		log.info("Called connectDB set_new_user()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL set_account_wo_user(?,?,?,?,?,?)");
 			cstmt.setInt(1,balance);
@@ -109,7 +112,7 @@ public class connectDB {
 			cstmt.setInt(6, 0);
 			cstmt.execute();
 			uid = cstmt.getInt(6);
-			//System.out.println("ID of account is : " + uid);
+			log.info("ID of account is : " + uid);
 			return uid;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -126,7 +129,7 @@ public class connectDB {
 		int uid = -1;
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB set_account_w_user()");
+		log.info("Called connectDB set_account_w_user()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL set_account_w_name(?,?,?)");
 			cstmt.setInt(1,balance);
@@ -135,7 +138,7 @@ public class connectDB {
 			cstmt.setInt(3, 0);
 			cstmt.execute();
 			uid = cstmt.getInt(3);
-			//System.out.println("ID of account is : " + uid);
+			log.info("ID of account is : " + uid);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -153,7 +156,7 @@ public class connectDB {
 		ResultSet rs = null;
 		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();
 
-		//System.out.println("Called connectDB get_accounts_w_name()");
+		log.info("Called connectDB get_accounts_w_name()");
 		try(Connection connection = dbconnect()){
 			String stmt = "	SELECT a.account_id,a.balance,a.status"
 					+ "	FROM user_accounts ua RIGHT JOIN accounts a ON ua.account_id = a.account_id"
@@ -163,7 +166,7 @@ public class connectDB {
 			pstmt.setString(1,username);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
 				accts.add(new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3)));
 	        }
 		} catch (SQLException e) {
@@ -184,14 +187,14 @@ public class connectDB {
 		ResultSet rs = null;
 		BankAccount ba = null;
 		
-		//System.out.println("Called connectDB get_account_w_aid()");
+		log.info("Called connectDB get_account_w_aid()");
 		try(Connection connection = dbconnect()){
 			String stmt = "	SELECT a.account_id,a.balance,a.status FROM accounts a WHERE a.account_id = ?";
 			pstmt = connection.prepareStatement(stmt);
 			pstmt.setInt(1,id);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getString(2));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getString(2));
 	        	ba= new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3));
 	        }
 		} catch (SQLException e) {
@@ -211,7 +214,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		int transaction_id = 0;
 		
-		//System.out.println("Called connectDB set_account_w_deposit()");
+		log.info("Called connectDB set_account_w_deposit()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL deposit(?,?,?)");
 			cstmt.setInt(1,id);
@@ -220,7 +223,7 @@ public class connectDB {
 			cstmt.setInt(3, 0);
 			cstmt.execute();
 			transaction_id = cstmt.getInt(3);
-			//System.out.println("Transaction id: " + transaction_id); 
+			log.info("Transaction id: " + transaction_id); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -236,7 +239,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		int transaction_id = 0;
 		
-		//System.out.println("Called connectDB set_account_w_withdraw()");
+		log.info("Called connectDB set_account_w_withdraw()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL withdraw(?,?,?)");
 			cstmt.setInt(1,id);
@@ -245,7 +248,7 @@ public class connectDB {
 			cstmt.setInt(3, 0);
 			cstmt.execute();
 			transaction_id = cstmt.getInt(3);
-			//System.out.println("Transaction id: " + transaction_id); 
+			log.info("Transaction id: " + transaction_id); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -264,7 +267,7 @@ public class connectDB {
 		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();
 		String stmt;
 		
-		//System.out.println("Called connectDB confirm_account_w_pending_transfer()");
+		log.info("Called connectDB confirm_account_w_pending_transfer()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT DISTINCT a.account_id, a.balance, a.status "
 					+ "FROM accounts a INNER JOIN transaction_logs t ON t.dest_account = a.account_id "
@@ -273,7 +276,7 @@ public class connectDB {
 			pstmt.setInt(1,account_id);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
 				accts.add(new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3)));
 	        }
 		} catch (SQLException e) {
@@ -295,7 +298,7 @@ public class connectDB {
 		String stmt;
 		BankAccount ba = null;
 		
-		//System.out.println("Called connectDB get_account_existance()");
+		log.info("Called connectDB get_account_existance()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT a.account_id, a.balance, a.status "
 					+ "FROM accounts a WHERE a.status = 'active' AND account_id = ?";
@@ -303,7 +306,7 @@ public class connectDB {
 			pstmt.setInt(1,id);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
 	        	ba = new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3));
 	        }
 		} catch (SQLException e) {
@@ -325,7 +328,7 @@ public class connectDB {
 		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();
 		String stmt;
 		
-		//System.out.println("Called connectDB get_accounts_posting_transfer()");
+		log.info("Called connectDB get_accounts_posting_transfer()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT DISTINCT account_id, balance, accounts.status "
 					+ "FROM accounts INNER JOIN transaction_logs ON account_id=src_account "
@@ -334,7 +337,7 @@ public class connectDB {
 			pstmt.setInt(1,des_account);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
 				accts.add(new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3)));
 	        }
 		} catch (SQLException e) {
@@ -356,7 +359,7 @@ public class connectDB {
 		ArrayList<Transaction> tids = new ArrayList<Transaction>();
 		String stmt;
 		
-		//System.out.println("Called connectDB get_transaction_pending()");
+		log.info("Called connectDB get_transaction_pending()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT transaction_id,src_account,dest_account, status, amount, act, created_at "
 					+ "FROM transaction_logs "
@@ -365,8 +368,8 @@ public class connectDB {
 			pstmt.setInt(1,des_account);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-//				System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)
-//				+" "+rs.getString(4)+" "+rs.getInt(5)+" "+rs.getString(6)+" "+rs.getTimestamp(7));
+	        	log.info("ResultSet row:" + rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)
+				+" "+rs.getString(4)+" "+rs.getInt(5)+" "+rs.getString(6)+" "+rs.getTimestamp(7));
 	        	tids.add(new Transaction(rs.getInt(1),rs.getInt(2),rs.getInt(3),rs.getString(4),
 	        			rs.getInt(5),rs.getString(6),rs.getTimestamp(7)));
 	        }
@@ -387,7 +390,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		int transaction_id = 0;
 		
-		//System.out.println("Called connectDB post_transfer()");
+		log.info("Called connectDB post_transfer()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL post_transfer(?,?,?,?)");
 			cstmt.setInt(1,src);
@@ -397,7 +400,7 @@ public class connectDB {
 			cstmt.setInt(4, 0);
 			cstmt.execute();
 			transaction_id = cstmt.getInt(4);
-			//System.out.println("Transaction id: " + transaction_id); 
+			log.info("Transaction id: " + transaction_id); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -413,12 +416,12 @@ public class connectDB {
 	public static void accept_transfer(int tid) {
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB accept_transfer()");
+		log.info("Called connectDB accept_transfer()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL finalize_transfer(?)");
 			cstmt.setInt(1,tid);
 			cstmt.execute();
-			//System.out.println("Transaction successfully accepted...); 
+			log.info("Transaction successfully accepted..."); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -432,12 +435,12 @@ public class connectDB {
 	public static void reject_transfer(int tid) {
 		CallableStatement cstmt = null;
 		
-		//System.out.println("Called connectDB reject_transfer()");
+		log.info("Called connectDB reject_transfer()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL reject_transfer(?)");
 			cstmt.setInt(1,tid);
 			cstmt.execute();
-			//System.out.println("Transaction rejected...); 
+			log.info("Transaction rejected..."); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -455,14 +458,14 @@ public class connectDB {
 		ArrayList<UserAccount> usrs = new ArrayList<UserAccount>();
 		String stmt;
 		
-		//System.out.println("Called connectDB get_pending_users()");
+		log.info("Called connectDB get_pending_users()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT user_id, user_name, account_type FROM users WHERE "
 					+ "status = 'pending' AND account_type = 'customer';";
 			pstmt = connection.prepareStatement(stmt);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3));
+	        	log.info("ResultSet row: " +rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3));
 	        	usrs.add(new UserAccount(rs.getInt(1),rs.getString(2),"pending",rs.getString(3)));
 	        }
 			connection.close();
@@ -482,7 +485,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		int uid = 0;
 		
-		//System.out.println("Called connectDB accept_reject_user()");
+		log.info("Called connectDB accept_reject_user()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL approve_reject_customer(?,?,?)");
 			cstmt.setString(1,user_name);
@@ -491,7 +494,7 @@ public class connectDB {
 			cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
 			cstmt.execute();
 			uid = cstmt.getInt(3);
-			//System.out.println("User id: " + uid); 
+			log.info("User id: " + uid); 
 			cstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -511,14 +514,14 @@ public class connectDB {
 		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();
 		String stmt;
 		
-		//System.out.println("Called connectDB get_accounts_posting_transfer()");
+		log.info("Called connectDB get_accounts_posting_transfer()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT DISTINCT account_id, balance, accounts.status "
 					+ "FROM accounts WHERE accounts.status = 'pending'";
 			pstmt = connection.prepareStatement(stmt);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-				//System.out.println("row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
+	        	log.info("ResultSet row: "+ rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(3));
 				accts.add(new BankAccount(rs.getInt(1),rs.getInt(2),rs.getString(3)));
 	        }
 		} catch (SQLException e) {
@@ -538,7 +541,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		int uid = 0;
 		
-		//System.out.println("Called connectDB accept_reject_user()");
+		log.info("Called connectDB accept_reject_user()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL approve_reject_application(?,?,?)");
 			cstmt.setInt(1,account_id);
@@ -547,7 +550,7 @@ public class connectDB {
 			cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
 			cstmt.execute();
 			uid = cstmt.getInt(3);
-			System.out.println("User id: " + uid); 
+			log.info("User id: " + uid); 
 			cstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -565,7 +568,7 @@ public class connectDB {
 		CallableStatement cstmt = null;
 		UserAccount ua = null;
 		
-		//System.out.println("Called connectDB accept_reject_user()");
+		log.info("Called connectDB accept_reject_user()");
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL get_user_w_name(?,?,?,?)");
 			cstmt.setString(1,user_name);
@@ -576,7 +579,7 @@ public class connectDB {
 			cstmt.registerOutParameter(3, java.sql.Types.VARCHAR);
 			cstmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 			cstmt.execute();
-			//System.out.println("User id: " + cstmt.getInt(2) + ": " + cstmt.getString(3) + " " + cstmt.getString(4)); 
+			log.info("User id: " + cstmt.getInt(2) + ": " + cstmt.getString(3) + " " + cstmt.getString(4)); 
 			ua = new UserAccount(cstmt.getInt(2),user_name,cstmt.getString(3),cstmt.getString(4));
 			cstmt.close();
 		} catch (SQLException e) {
@@ -597,15 +600,15 @@ public class connectDB {
 		ArrayList<Transaction> logs = new ArrayList<Transaction>();
 		String stmt;
 		
-		//System.out.println("Called connectDB get_accounts_posting_transfer()");
+		log.info("Called connectDB get_accounts_posting_transfer()");
 		try(Connection connection = dbconnect()){
 			stmt = "SELECT transaction_id, src_account,dest_account, status, amount, act, created_at "
 					+ "FROM transaction_logs WHERE dest_account IS NOT NULL";
 			pstmt = connection.prepareStatement(stmt);
 			rs = pstmt.executeQuery();
 	        while (rs.next()) {
-//				System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)
-//				+" "+rs.getString(4)+" "+rs.getInt(5)+" "+rs.getString(6)+" "+rs.getTimestamp(7));
+	        	log.info("ResultSet row: "+rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)
+				+" "+rs.getString(4)+" "+rs.getInt(5)+" "+rs.getString(6)+" "+rs.getTimestamp(7));
 	        	logs.add(new Transaction(rs.getInt(1),rs.getInt(2),rs.getInt(3),rs.getString(4),
 	        			rs.getInt(5),rs.getString(6),rs.getTimestamp(7)));
 	        }

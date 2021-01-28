@@ -13,36 +13,35 @@ public class Employee extends User {
 		acntlist = new ArrayList<BankAccount>();
 	}
 	
-	@Override
-	public void setupUser() {
-		System.out.println("createUser -- Employee");
-	}
-	
-	@Override
-	public ArrayList<BankAccount> viewAccount() {
-		System.out.println("display selected customer selected bank account");
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public void setupUser() {
+//		System.out.println("createUser -- Employee");
+//	}
+//	
+//	@Override
+//	public ArrayList<BankAccount> viewAccount() {
+//		System.out.println("display selected customer selected bank account");
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public void approveReject() {
+//		System.out.println("approve/reject posted transfer");
+//		// TODO Auto-generated method stub
+//	}
 
-	@Override
-	public void approveReject() {
-		System.out.println("approve/reject posted transfer");
-		System.out.println("approve/reject posted transfer");
-		// TODO Auto-generated method stub
-		
-	}
+//
+//	@Override
+//	public void storeAccounts() {
+//		System.out.println("display list customers accounts");
+//		
+//	}
 	
 	public UserAccount getUsr() {
 		return usr;
 	}
-
-	@Override
-	public void storeAccounts() {
-		System.out.println("display list customers accounts");
-		
-	}
-
+	
 	public String getStatus() {
 		return usr.getStatus();
 	}
