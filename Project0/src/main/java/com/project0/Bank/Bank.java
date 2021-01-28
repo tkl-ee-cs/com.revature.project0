@@ -9,9 +9,7 @@ public class Bank {
 		User usr;
 		while(true) {
 			usr = Session.startPrompts();
-			if (usr != null) {
-				usr = Session.loggedIn(usr);
-			}
+			Session.loggedIn(usr);
 		}
 	}
 }

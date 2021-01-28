@@ -8,7 +8,7 @@ public class cleanScan {
 	
 	public static String getStr() {
 		String retString = "";
-		while((retString.length() < 1) | (retString.contains(" "))) {
+		while(retString.length() < 1) {
 			try{
 				retString = scanner.nextLine();
 			}catch (Exception e) {
@@ -18,6 +18,8 @@ public class cleanScan {
 				System.out.printf("...invalid input, try again...");
 			}
 		}
+		if(retString.contains(" ")) {System.out.println("Note: Your [space] characters will be handled as [_]...");}
+		retString = retString.replaceAll(" ", "_");
 		return retString;
 	}
 	

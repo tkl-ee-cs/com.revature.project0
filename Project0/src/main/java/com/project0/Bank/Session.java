@@ -1,10 +1,8 @@
 package com.project0.Bank;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
+//import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.ListIterator;
+//import java.util.ListIterator;
 
 public class Session {
 	
@@ -162,9 +160,9 @@ public class Session {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//USER PROMPT METHOD - CONTROLS WHICH MENU IS SEEN - EMPLOYEE VS CUSTOMER
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static User loggedIn(User user) {
+	public static void loggedIn(User user) {
 		String type = user.getType();
-		int retInt;
+		int retInt; //potentially additional logic based on returned values
 		if (type.equals("customer")) {
 			retInt = customerPrompt(user);
 		}else if(type.equals("employee")) {
@@ -172,8 +170,6 @@ public class Session {
 		}else {
 			System.out.println("...Error, falling out of conditions...");
 		}
-//--->edit handle returned retInt value: 0 is indication of log out ask, -1 fall out error, 
-		return null;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//CUSTOMER PROMPT METHOD - FIRST MENU FOR CUSTOMER SELECTIONS
@@ -262,7 +258,7 @@ public class Session {
 	//VIEW BANK ACCOUNTS PROMPT METHOD - MENU FOR VIEWING ACCOUNTS/SELECTING ACCOUNT
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int accountFocusPrompt(User user) {
-		int retView = 1;
+		int retView = 0;
 		int retInt;
 		int retVal;
 		
@@ -280,10 +276,10 @@ public class Session {
 		System.out.println("---------------------------------------------------------");
 		do{System.out.println("__PLEASE TYPE IN YOUR ACCOUNT TO VIEW__");
 		if(active.size() < 1) {
-			System.out.println("---Active No accounts located---");
+			System.out.println("---No Active accounts located---");
 		}else {
 		for(int j=0;j<active.size();j++) { //Display the list of accounts
-			System.out.println("---Account# " + active.get(j).getAccount_id() + " [" + j + "]:");
+			System.out.println("---Account# " + active.get(j).getAccount_id() + ", $" + active.get(j).getBalance() + " [" + j + "]:");
 		}
 		
 		if(pends.size() > 0) {
@@ -312,7 +308,6 @@ public class Session {
 			retVal = customerActionPrompt(active.get(retView));
 			if(retVal == 1) {retInt = -1;}
 			if(retVal == 0) {return 0;}
-//-->edit	return retView;
 		}else if(retInt == 1){ 
 			System.out.println("Returning Back to Previous Menu...");
 			System.out.println("---------------------------------------------------------");
@@ -408,8 +403,8 @@ public class Session {
 		int balance = ba.getBalance();
 		
 		System.out.println("---------------------------------------------------------");
-		System.out.println("Account#: " + actid); 
 		do {
+			System.out.println("Account#: " + actid + " -- $" + balance); 
 			System.out.println("__PLEASE INDICATE HOW MUCH TO DEPOSIT__");
 			do {retVal = cleanScan.getInt(); //Wait for input
 				if(retVal == 0) {System.out.printf("...invalid amount, try again...");}
@@ -454,12 +449,12 @@ public class Session {
 		int retVal;
 		int retInt;
 		int actid = ba.getAccount_id();
-		int balance;
+		int balance =ba.getBalance();
 		BankAccount ba2;
 
 		System.out.println("---------------------------------------------------------");
-		System.out.println("Account#: " + actid); 
 		do {
+			System.out.println("Account#: " + actid + " -- $" + balance); 
 			System.out.println("__PLEASE INDICATE HOW MUCH TO WITHDRAW__");
 			do {retVal = cleanScan.getInt(); //Wait for input
 				ba2 = connectDB.get_account_w_aid(actid);
@@ -507,12 +502,13 @@ public class Session {
 		int retVal = 0;
 
 		int actid = ba.getAccount_id();
-		BankAccount ba2;
+		int balance = ba.getBalance();
+		//BankAccount ba2;
 		ArrayList<BankAccount> accts;
 		
 		System.out.println("---------------------------------------------------------");
-		System.out.println("Account#: " + actid); 
 		do {
+			System.out.println("Account#: " + actid + " -- $" + balance); 
 			accts = connectDB.confirm_account_w_pending_transfer(ba.getAccount_id());
 			//for(int i=0;i<accts.size();i++) { System.out.println("---Account# " + accts.get(i).getAccount_id());} //Display the list of accounts
 			
@@ -579,13 +575,13 @@ public class Session {
 		    do {
 		    	dst = cleanScan.getInt();
 		    	//Check database for account, if it exists, return account number, else return 0
-		    	if(dst < 1) {System.out.println("...invalid input, try again...");}
+		    	if((dst < 1)|(dst == src)) {System.out.println("...invalid input, try again...");}
 		    	else {
 		    		ba2 = connectDB.get_account_existance(dst);
 			    	if (ba2 != null) {valid = 1;}
 			    	else{System.out.println("...invalid user, try again...");}
 		    	}
-		    }while((dst < 1)|(valid==0));
+		    }while((dst < 1)|(valid==0)|(dst==src));
 		    
 			System.out.println("__PLEASE INDICATE HOW MUCH YOU WISH TO TRANSFER__");
 			do {amount = cleanScan.getInt(); //Wait for input
@@ -653,7 +649,7 @@ public class Session {
 		int retInt = -1;
 		int retVal = -1;
 		BankAccount ba2;
-		ArrayList<BankAccount> accts = new ArrayList<BankAccount>();;
+		//ArrayList<BankAccount> accts = new ArrayList<BankAccount>();
 		ArrayList<Transaction> tLogs = new ArrayList<Transaction>();
 
 		System.out.println("---------------------------------------------------------");
@@ -709,72 +705,46 @@ public class Session {
 			}else {
 				retVal = -1;
 			}
-			
 		}while((retVal > 1)|(retVal < 0));
+		
 		return -1;
 	}
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//EPLOYEE PROMPT METHOD - FIRST MENU FOR EMPLOYEE SELECTIONS
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int employeePrompt(User user) {
 		int retInt;
-		String name = "";
-		
-//-->edit query database to get the username of account
+		int retVal = -1;
+		String name = user.getUsername();
+
+		System.out.println("---------------------------------------------------------");
 	    System.out.println("WELCOME BACK, " + name + ".");
-	    
-	    System.out.println("__MAKE A SELECTION FROM THE MENU__");
-	    System.out.println("---Approve/Reject A Customer Account [1]:");
-	    System.out.println("---Approve/Reject A Banking Account Application [2]:");
-	    System.out.println("---View A Customer's Accounts [3]:");
-	    System.out.println("---View Transaction Logs [4]:");
-	    System.out.println("\n");
-	    System.out.println("Press [0] to log out...");
 	    do{
+		    System.out.println("__MAKE A SELECTION FROM THE MENU__");
+		    System.out.println("---Approve/Reject A Customer Account [1]:");
+		    System.out.println("---Approve/Reject A Banking Account Application [2]:");
+		    System.out.println("---View A Customer's Accounts [3]:");
+		    System.out.println("---View Transaction Logs [4]:");
+		    System.out.println("Or, press [0] to Log Out. Any other integer key will restart the input process...");
+
 	    	retInt = cleanScan.getInt();
 			if(retInt == 1) {
-		    	return 1;
+				retVal = reviewUserPrompt(user);
+				if(retVal == 1) {retInt = -1;} //keep in loop as this is the previous menu
+				else if(retVal == 0) {return 0;}
 		    }else if(retInt == 2) {
-		    	return 2;
+				retVal = reviewAccountPrompt(user);
+				if(retVal == 1) {retInt = -1;} //keep in loop as this is the previous menu
+				else if(retVal == 0) {return 0;}
 		    }else if(retInt == 3) {
-		    	return 3;
+		    	retVal = viewUserPrompt(user); 
+				if(retVal == 1) {retInt = -1;} //keep in loop as this is the previous menu
+				else if(retVal == 0) {return 0;}
 		    }else if(retInt == 4) {
-		    	return 4;
+		    	retVal = viewLogsPrompt(user); 
+				if(retVal == 1) {retInt = -1;} //keep in loop as this is the previous menu
+				else if(retVal == 0) {return 0;}
 		    }else if(retInt == 0) {
 		    	return 0;
 		    }else {
@@ -782,10 +752,231 @@ public class Session {
 		    }
 	    }while((retInt < 0) | (retInt > 4));
 	    
-	    return -1; //return -1 if dropping out of proper return or the loop
+	    return -1;
 	}
 	
-	
-	
-}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//REVIEW PENDING USER ACCOUNT REQUESTS - PROMPT FOR ACTIONS
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static int reviewUserPrompt(User u) {
+		int retInt,j;
+		ArrayList<UserAccount> acts;
+		UserAccount user;
+		int retVal = 0;
 
+		System.out.println("---------------------------------------------------------");
+		do{
+			System.out.println("__PLEASE SELECT PENDING USER APPLICATION TO APPROVE OR REJECT__");
+			acts = connectDB.get_pending_users();
+			j = 0;
+			for(UserAccount i:acts) {
+				System.out.println("--- [" + j++ + "] User Account Request from: " + i.getUser_name());
+			}
+
+			do {retInt = cleanScan.getInt();
+				if(retInt>=acts.size()) {System.out.printf("...invalid selection, try again...");}
+		    }while(retInt>=acts.size());
+			user = acts.get(retInt); //store selected account in user variable
+			
+		    System.out.println("---[2] to Approve User Account request:");
+		    System.out.println("---[3] to Reject User Account request:");
+		    System.out.println("Or, Press [1] to Go Back to Previous Menu. Press [0] to Log Out...");
+		    System.out.println("Any other key will cancel selection, and restart the selection process...");
+		    retInt = cleanScan.getInt();
+	    	
+			if(retInt == 2) {
+				retVal = connectDB.accept_reject_user(user.getUser_name(),"active");
+				if(retVal > 0) {
+					System.out.println("Approving User Account. Returning to previous menu...");
+					System.out.println("---------------------------------------------------------");
+					return 1;
+				}
+				else {
+					System.out.printf("...issue arose, try again...");
+					retInt = -1;
+				}
+			}else if(retInt == 3){ 
+				retVal = connectDB.accept_reject_user(user.getUser_name(),"rejected");
+				if(retVal > 0) {
+					System.out.println("Rejecting User Account. Returning to previous menu...");
+					System.out.println("---------------------------------------------------------");
+					return 1;
+				}
+				else {
+					System.out.printf("...issue arose, try again...");
+					retInt = -1;
+				}
+			}else if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
+				System.out.println("Logging out...");
+				System.out.println("---------------------------------------------------------");
+				return 0;
+			}else {
+				System.out.printf("...invalid selection, try again...");
+				retInt = -1;
+			}
+		}while((retInt > 3)|(retInt < 0));
+		
+		return -1;
+		}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//REVIEW BANK ACCOUNT REQUESTS - PROMPT FOR ACTIONS
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static int reviewAccountPrompt(User user) {
+		int retInt, j;
+		int retVal;
+		ArrayList<BankAccount> acts = new ArrayList<BankAccount>();
+		BankAccount ba;
+		
+		System.out.println("---------------------------------------------------------");
+		do{
+			System.out.println("__PLEASE SELECT BANKING ACCOUNT APPLICATION TO APPROVE OR REJECT__");
+			acts = connectDB.get_pending_accounts();
+			j = 0;
+			for(BankAccount i:acts) {
+				System.out.println("--- [" + j++ + "] Bank Account " + i.getAccount_id() + " pending with balance $" + i.getBalance());
+			}
+			
+			do {retInt = cleanScan.getInt();
+				if(retInt>=acts.size()) {System.out.printf("...invalid selection, try again...");}
+		    }while(retInt>=acts.size());
+			ba = acts.get(retInt); //store selected account in user variable
+			
+		    System.out.println("---[2] to Approve Bank Account application:");
+		    System.out.println("---[3] to Reject Bank Account application:");
+		    System.out.println("Or, Press [1] to Go Back to Previous Menu. Press [0] to Log Out...");
+		    System.out.println("Any other key will cancel selection, and restart the selection process...");
+		    retInt = cleanScan.getInt();
+	    	
+			if(retInt == 2) {
+				retVal = connectDB.accept_reject_account(ba.getAccount_id(),"active");
+				if(retVal > 0) {
+					System.out.println("Approving the Banking Account. Returning to previous menu...");
+					System.out.println("---------------------------------------------------------");
+					return 1;
+				}
+				else {
+					System.out.printf("...issue arose, try again...");
+					retInt = -1;
+				}
+			}else if(retInt == 3){ 
+				retVal = connectDB.accept_reject_account(ba.getAccount_id(),"rejected");
+				if(retVal > 0) {
+					System.out.println("Rejecting the Banking Account. Returning to previous menu...");
+					System.out.println("---------------------------------------------------------");
+					return 1;
+				}
+				else {
+					System.out.printf("...issue arose, try again...");
+					retInt = -1;
+				}
+			}else if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
+				System.out.println("Logging out...");
+				System.out.println("---------------------------------------------------------");
+				return 0;
+			}else {
+				System.out.printf("...invalid selection, try again...");
+				retInt = -1;
+			}
+		}while((retInt > 3)|(retInt <0));
+		
+		return -1;
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static int viewUserPrompt(User usr) {
+		String name;
+		int retInt;
+		ArrayList<BankAccount> acts = new ArrayList<BankAccount>();
+		UserAccount ua;
+	    String status;
+
+		System.out.println("---------------------------------------------------------");
+		do{
+			System.out.println("__PLEASE PROVIDE USERNAME TO VIEW__");
+		    System.out.printf("---UserName:");
+			do {
+		    	name = cleanScan.getStr();
+		    	status = connectDB.get_status_w_name(name); // return status if username exists
+		    	if(status.isEmpty()) {System.out.printf("...invalid input, try again...");}
+		    }while((name.isEmpty())|(status.isEmpty()));
+		    
+			ua = connectDB.get_user_w_name(name);
+		    System.out.println("DISPLAYING " + " DETAILS:"); 
+		    System.out.println("__" + ua.getType().toUpperCase() + " " + ua.getStatus().toUpperCase() 
+		    + "--" + ua.getUser_name() + " ID# " + ua.getUser_id()  + "__");
+		    
+			acts = connectDB.get_accounts_w_name(name); //Check database for list of accounts, store in acts
+			if(acts.size() < 1) {System.out.println("No accounts located...");}
+			else {
+				for(BankAccount ba:acts) {
+					System.out.println("--"+"Account  ("+  ba.getStatus() + ") #: " + ba.getAccount_id() + ", Balance: $" + ba.getBalance());
+				}
+			}
+		    System.out.println("");
+		    System.out.println("When viewing is complete, press [1] to Go Back to Previous Menu.");
+		    System.out.println("Or, press [0] to Log Out...");
+		    System.out.println("Any other key to input another user to view...");
+		    retInt = cleanScan.getInt();
+	    	
+		    if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
+				System.out.println("Logging out...");
+				System.out.println("---------------------------------------------------------");
+				return 0;
+			}
+		}while((retInt > 1)|(retInt < 0));
+		
+		return -1;
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//VIEW TRANSACTION LOGS
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static int viewLogsPrompt(User user) {
+		int retInt;
+		ArrayList<Transaction> logs;
+		
+		System.out.println("---------------------------------------------------------");
+		do{
+			logs = connectDB.get_transaction_logs();
+			
+			for(Transaction i:logs) {
+			    System.out.println("At " + i.getCreated() + ": Account# " + i.getSrc() + " posted a transfer of $" + i.getAmount() 
+			    		+ " to Account #" + i.getDst()  + "."); 
+			    System.out.println("The Request is " + i.getStatus() +".");
+			}
+			
+		    System.out.println("");
+		    System.out.println("When viewing is complete, press [1] to Go Back to Previous Menu.");
+		    System.out.println("Or, press [0] to Log Out...");
+		    System.out.println("Any other key to refresh and view logs again...");
+		    retInt = cleanScan.getInt();
+	    	
+		    if(retInt == 1){ 
+				System.out.println("Returning Back to Previous Menu...");
+				System.out.println("---------------------------------------------------------");
+				return 1;
+			}else if(retInt == 0){ 
+				System.out.println("Logging out...");
+				System.out.println("---------------------------------------------------------");
+				return 0;
+			}
+		}while((retInt > 1)|(retInt < 0));
+		
+		return -1;
+	}
+}
