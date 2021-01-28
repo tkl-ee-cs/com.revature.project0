@@ -34,7 +34,7 @@ public class Session {
 	    int retInt;
 		System.out.println("---------------------------------------------------------");
 		System.out.println("---------------------------------------------------------");
-	    System.out.println("WELCOME TO BANK OF TRENTON LOCATED IN REVATURE, NJ.");
+	    System.out.println("WELCOME TO BANK OF REVATURE LOCATED IN TRENTON, NJ.");
 	    System.out.println("__TO BEGIN THE SERVICES, PLEASE MAKE A SELECTION__");
 	    System.out.println("---Create New Account [1]:");
 	    System.out.println("---Log In To Your Account [2]:");
@@ -112,6 +112,7 @@ public class Session {
 		System.out.println("---------------------------------------------------------");
 	    do{//Loop while the retVal is not y or 0
 	    	System.out.println("__ENTER USER CREDENTIALS__");
+	    	do {
 		    	do {
 			    	do {
 			    		System.out.printf("---UserName: ");
@@ -123,13 +124,15 @@ public class Session {
 				    }while(status==null);
 			    	if(status.equals("pending")) {System.out.println("...account is pending, please try another account...");}
 			    }while(status.equals("pending"));
+				uid = connectDB.get_id_w_name_pw(username,password);
+				if(uid == 0) {System.out.println("...incorrect log in info, please try another account...");}
+	    	}while(uid == 0);
 		    	
 		    System.out.println("Input [1] to Confirm Submission? Or, Press [0] to Go Back...");
 		    System.out.println("Any other integer selection will restart the input process...");
 		    retInt = cleanScan.getInt();
 			if(retInt == 1) { //check for 1, to confirm
 				act_type = connectDB.get_type_w_name(username);
-				uid = connectDB.get_id_w_name_pw(username,password);
 				if(act_type.equals("employee")) {
 					//System.out.printf("Logging into employee account...");
 					user = new Employee(uid,username,status);
@@ -404,6 +407,8 @@ public class Session {
 		
 		System.out.println("---------------------------------------------------------");
 		do {
+			balance = connectDB.get_account_balance(actid);
+			
 			System.out.println("Account#: " + actid + " -- $" + balance); 
 			System.out.println("__PLEASE INDICATE HOW MUCH TO DEPOSIT__");
 			do {retVal = cleanScan.getInt(); //Wait for input
@@ -415,7 +420,7 @@ public class Session {
 		    System.out.println("Any other integer key will restart the input process...");
 		    retInt = cleanScan.getInt();
 			if(retInt == 2) { 			
-				retVal = connectDB.set_account_w_deposit(actid,balance);
+				retVal = connectDB.set_account_w_deposit(actid,retVal);
 				if(retVal > 0) {
 					System.out.println("Deposit has been made. Returning to previous menu.");
 					System.out.println("---------------------------------------------------------");
@@ -449,11 +454,13 @@ public class Session {
 		int retVal;
 		int retInt;
 		int actid = ba.getAccount_id();
-		int balance =ba.getBalance();
+		int balance = ba.getBalance();
 		BankAccount ba2;
 
 		System.out.println("---------------------------------------------------------");
 		do {
+			balance = connectDB.get_account_balance(actid);
+			
 			System.out.println("Account#: " + actid + " -- $" + balance); 
 			System.out.println("__PLEASE INDICATE HOW MUCH TO WITHDRAW__");
 			do {retVal = cleanScan.getInt(); //Wait for input
@@ -908,8 +915,8 @@ public class Session {
 			do {
 		    	name = cleanScan.getStr();
 		    	status = connectDB.get_status_w_name(name); // return status if username exists
-		    	if(status.isEmpty()) {System.out.printf("...invalid input, try again...");}
-		    }while((name.isEmpty())|(status.isEmpty()));
+		    	if(status==null) {System.out.printf("...invalid input, try again...");}
+		    }while((name.isEmpty())|(status==null));
 		    
 			ua = connectDB.get_user_w_name(name);
 		    System.out.println("DISPLAYING " + " DETAILS:"); 

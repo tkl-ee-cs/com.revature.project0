@@ -210,7 +210,7 @@ public class connectDB {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//SET DEPOSIT AMOUNT TO BANK ACCOUNT USING ACCOUNT ID
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static int set_account_w_deposit(int id, int balance) {
+	public static int set_account_w_deposit(int id, int amount) {
 		CallableStatement cstmt = null;
 		int transaction_id = 0;
 		
@@ -218,7 +218,7 @@ public class connectDB {
 		try(Connection connection = dbconnect()){
 			cstmt = connection.prepareCall("CALL deposit(?,?,?)");
 			cstmt.setInt(1,id);
-			cstmt.setInt(2,balance);
+			cstmt.setInt(2,amount);
 			cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
 			cstmt.setInt(3, 0);
 			cstmt.execute();
@@ -233,7 +233,7 @@ public class connectDB {
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//SET DEPOSIT AMOUNT TO BANK ACCOUNT USING ACCOUNT ID
+	//SET WITHDRAW AMOUNT TO BANK ACCOUNT USING ACCOUNT ID
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static int set_account_w_withdraw(int id, int amount) {
 		CallableStatement cstmt = null;
@@ -621,6 +621,33 @@ public class connectDB {
 		}
 		
 		return logs;
+	}
+	
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GET BALANCE FROM ACCOUNT ID 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public static int get_account_balance(int account_id) {
+		CallableStatement cstmt = null;
+		int bal = 0;
+		
+		log.info("Called connectDB get_account_balance()");
+		try(Connection connection = dbconnect()){
+			cstmt = connection.prepareCall("CALL get_balance_w_actid(?,?)");
+			cstmt.setInt(1,account_id);
+			cstmt.setInt(2,0);
+			cstmt.registerOutParameter(2, java.sql.Types.INTEGER);
+			cstmt.execute();
+			log.info("Balance for # "+ account_id +": " + cstmt.getInt(2)); 
+			bal = cstmt.getInt(2);
+			cstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+		    try { if (cstmt != null) cstmt.close(); } catch (Exception e) {};
+		}
+		
+		return bal;
 	}
 }
 
